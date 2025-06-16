@@ -1,0 +1,5 @@
+version: "0.0.3"
+description: "Component for AMG8833 Infrared Array Sensor Grid-EYE"
+url: "https://github.com/clavinrali/amg8833_esp_idf.git"
+repository: "https://github.com/clavinrali/amg8833_esp_idf.git"
+license: "MIT"
