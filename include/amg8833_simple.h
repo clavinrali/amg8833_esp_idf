@@ -32,3 +32,4 @@ struct amg8833_dev_s{
 esp_err_t amg8833_config(struct amg8833_dev_s *dev);
 esp_err_t amg8833_get_temp(struct amg8833_dev_s *dev, float *buff);
 esp_err_t amg8833_get_frame(struct amg8833_dev_s *dev, float *buff, size_t in_buff_size);
+esp_err_t amg8833_get_rawframe(struct amg8833_dev_s *dev, int16_t *in_buff, size_t in_buff_size);

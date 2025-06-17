@@ -37,6 +37,7 @@ void app_main(void)
 
 	float val = 0;
 	float buf[64];
+	int16_t rawbuf[64];
 	while(1){
 		//Get On-board thermistor Value
 		ESP_ERROR_CHECK(amg8833_get_temp(&amg8833_dev, &val));
@@ -49,6 +50,15 @@ void app_main(void)
 		ESP_LOGI(TAG, "Frame :");
 		for(int i=0; i<64; i+=8){
 			ESP_LOGI(TAG, "%f, %f, %f, %f, %f, %f, %f, %f", buf[i],buf[i+1], buf[i+2],buf[i+3],buf[i+4],buf[i+5],buf[i+6],buf[i+7]);
+		}
+		vTaskDelay(pdMS_TO_TICKS(150));
+
+		//Get RAW pixel values
+		ESP_ERROR_CHECK(amg8833_get_rawframe(&amg8833_dev, rawbuf, 64));
+
+		ESP_LOGI(TAG, "Raw Frame :");
+		for(int i=0; i<64; i+=8){
+			ESP_LOGI(TAG, "%d, %d, %d, %d, %d, %d, %d, %d", rawbuf[i],rawbuf[i+1],rawbuf[i+2],rawbuf[i+3],rawbuf[i+4],rawbuf[i+5],rawbuf[i+6],rawbuf[i+7]);
 		}
 		vTaskDelay(pdMS_TO_TICKS(150));
 	}

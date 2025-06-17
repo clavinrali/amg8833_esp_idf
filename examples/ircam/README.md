@@ -1,7 +1,7 @@
 # IR CAM Application
 
 This is a test application for the AMG8833 Grid-EYE.
-It displays the pixel values onto the serial
+It displays the pixel values onto the serial console
 
 ## To Run
 ```

@@ -1,5 +1,7 @@
 ## IDF Component Manager Manifest File
 dependencies:
   clavinrali/amg8833_simple:
-    version: "^0.0.1"
+    version: "^0.0.4"
     override_path: "../../.."
+files:
+   use_gitignore: true

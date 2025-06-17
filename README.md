@@ -8,6 +8,7 @@ This driver can read the onboad thermistor and frame data. It uses the new I2C m
 esp_err_t amg8833_config(struct amg8833_dev_s *dev);										//Configuration function, should be called first
 esp_err_t amg8833_get_temp(struct amg8833_dev_s *dev, float *buff);							//Get on-board thermistor value
 esp_err_t amg8833_get_frame(struct amg8833_dev_s *dev, float *buff, size_t in_buff_size);	//Get the pixel values, size should be 64
+esp_err_t amg8833_get_rawframe(struct amg8833_dev_s *dev, int16_t *in_buff, size_t in_buff_size);	//Get raw pixel values, size should be 64
 ```
 
 
