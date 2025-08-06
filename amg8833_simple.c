@@ -19,7 +19,7 @@ esp_err_t amg8833_config(struct amg8833_dev_s *dev) {
 	i2c_device_config_t dev_cfg = {
 		.dev_addr_length = I2C_ADDR_BIT_LEN_7,
 		.device_address = dev->dev_addr,
-		.scl_speed_hz = 100000,
+		.scl_speed_hz = 400000,
 	};
 
 	ret = i2c_master_probe(dev->i2c_bus_handle, dev->dev_addr, -1);

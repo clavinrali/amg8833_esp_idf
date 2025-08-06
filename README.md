@@ -3,6 +3,11 @@
 This is a simple and minimal driver for AMG8833 Low resolution IR camera sensor.
 This driver can read the onboad thermistor and frame data. It uses the new I2C master APIs
 
+![IR frame](IRFrame.png)
+
+Check out the project [esp_IRframecapture](https://github.com/clavinrali/esp_IRframecapture) which is based on this driver. It captures the frame over tcp.
+It may or may not be a public repo. If it is not accessible, I've made it private.
+
 ## API
 ```C
 esp_err_t amg8833_config(struct amg8833_dev_s *dev);										//Configuration function, should be called first
@@ -17,40 +22,58 @@ esp_err_t amg8833_get_rawframe(struct amg8833_dev_s *dev, int16_t *in_buff, size
 ```C
 void app_main(void)
 {
-    ESP_LOGI(TAG, "Main Function");
+        ESP_LOGI(TAG, "Main Function");
 
-    i2c_master_bus_handle_t bus_handle;
+        i2c_master_bus_handle_t bus_handle = NULL;
 
-	//Set I2C bus
-    i2c_master_bus_config_t i2c_mst_config = {
-        .clk_source = I2C_CLK_SRC_DEFAULT,
-        .i2c_port = I2C_NUM_0,
-        .scl_io_num = 9,
-        .sda_io_num = 10,
-        .glitch_ignore_cnt = 7,
-        .flags.enable_internal_pullup = true,                                                                                                                   };
+        i2c_master_bus_config_t i2c_mst_config = {
+                .clk_source = I2C_CLK_SRC_DEFAULT,
+                .i2c_port = I2C_NUM_0,
+                .scl_io_num = 9,
+                .sda_io_num = 10,
+                .glitch_ignore_cnt = 7,
+                .flags.enable_internal_pullup = true,
+        };
 
-    ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_mst_config, &bus_handle));
+        ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_mst_config, &bus_handle));
 
-    struct amg8833_dev_s amg8833_dev = {
-        .dev_addr = 0x69,                                                                                                                                           .i2c_bus_handle = bus_handle
-    };
-                                                                                                                                                                //Call AMG8833 Config
-    ESP_ERROR_CHECK(amg8833_config(&amg8833_dev));
+        struct amg8833_dev_s amg8833_dev = {
+                .dev_addr = 0x69,
+                .i2c_bus_handle = bus_handle
+        };
 
-    float val = 0;
-    float buf[64];                                                                                                                                              while(1){
-        //Get On-board thermistor Value
-        ESP_ERROR_CHECK(amg8833_get_temp(&amg8833_dev, &val));
+        vTaskDelay(pdMS_TO_TICKS(150));
 
-        ESP_LOGI(TAG, "On-board Temperature : %f", val);
+        //Call AMG8833 Config
+        ESP_ERROR_CHECK(amg8833_config(&amg8833_dev));
 
-		//Get pixel values
-		ESP_ERROR_CHECK(amg8833_get_frame(&amg8833_dev, buf, 64));
-		for(int i=0; i<64; i+=8){
-			ESP_LOGI(TAG, "%f, %f, %f, %f, %f, %f, %f, %f", buf[i],buf[i+1], buf[i+2],buf[i+3],buf[i+4],buf[i+5],buf[i+6],buf[i+7]);
-		}
-		vTaskDelay(pdMS_TO_TICKS(150));
-	}
+
+        float val = 0;
+        float buf[64];
+        int16_t rawbuf[64];
+        while(1){
+                //Get On-board thermistor Value
+                ESP_ERROR_CHECK(amg8833_get_temp(&amg8833_dev, &val));
+
+                ESP_LOGI(TAG, "On-board Temperature : %f", val);
+
+                //Get pixel values
+                ESP_ERROR_CHECK(amg8833_get_frame(&amg8833_dev, buf, 64));
+
+                ESP_LOGI(TAG, "Frame :");
+                for(int i=0; i<64; i+=8){
+                        ESP_LOGI(TAG, "%f, %f, %f, %f, %f, %f, %f, %f", buf[i],buf[i+1], buf[i+2],buf[i+3],buf[i+4],buf[i+5],buf[i+6],buf[i+7]);
+                }
+                vTaskDelay(pdMS_TO_TICKS(150));
+
+                //Get RAW pixel values
+                ESP_ERROR_CHECK(amg8833_get_rawframe(&amg8833_dev, rawbuf, 64));
+
+                ESP_LOGI(TAG, "Raw Frame :");
+                for(int i=0; i<64; i+=8){
+                        ESP_LOGI(TAG, "%d, %d, %d, %d, %d, %d, %d, %d", rawbuf[i],rawbuf[i+1],rawbuf[i+2],rawbuf[i+3],rawbuf[i+4],rawbuf[i+5],rawbuf[i+6],rawbuf[i+7]);
+                }
+                vTaskDelay(pdMS_TO_TICKS(150));
+        }
 }
 ```
